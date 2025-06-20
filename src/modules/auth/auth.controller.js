@@ -8,11 +8,11 @@ import { Admin } from "../../../databases/models/admin.model.js";
 
 
 
-export const addAdmin = async(req, res, next) => {
+export const addAdmin = catchError(async(req, res, next) => {
    let admin = new Admin(req.body)
     await admin.save()
     res.json({message:"succes"})
-}
+});
 export const signin = catchError(async (req, res, next) => {
     const model = req.info;
 
@@ -35,28 +35,31 @@ export const signin = catchError(async (req, res, next) => {
     next(new AppError("not founded email or password" , 401))
 })
 
+export const protectedRoutes = catchError(async (req, res, next) => {
+  let token = req.headers.token;
+
+  if (!token && req.headers.authorization?.startsWith("Bearer ")) {
+    token = req.headers.authorization.split(" ")[1];
+  }
+
+  if (!token) return next(new AppError("token not founded", 401));
+
+
+  let userPayload;
 
 
 
+  try {
+    userPayload = jwt.verify(token, process.env.JWT_KEY);
+  } catch (err) {
+    return next(new AppError("invalid token", 401));
+  }
 
-export const protectedRoutes = catchError( async (req, res, next) => {
-    let { token } = req.headers;
-    if (!token) return next(new AppError("token not founded", 401))
-    let userPayload = {};
-    jwt.verify(token,process.env.JWT_KEY, (err, payload) => {
-        if (err) return next(new AppError("invalid token", 401))
-        userPayload = payload;
-    })
-  
-    // let user = await User.findById(userPayload.userId)
-    // if (!user) return next(new AppError("user Not found", 401))
-    
-    req.user = userPayload;
-    
-    next()
+  // ✅ نحط بيانات المستخدم في req.user
+  req.user = userPayload;
 
-})
-
+  next();
+});
 
 export const allowedTo = (...roles)=> {
     return catchError(async (req, res, next) => {

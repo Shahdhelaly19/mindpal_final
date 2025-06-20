@@ -4,31 +4,30 @@ import { Reminder } from "../../databases/models/reminder.model.js";
 import { Patient } from "../../databases/models/patient.model.js";
 import { sendNotification } from "../utils/sendNotification.js";
 
-// كل دقيقة نراجع الـ skips اللي فات عليها 5 دقايق
+// علشان اخليه يلف على كل ال reminders اللى عملتها كل دقيقة
 cron.schedule("*/1 * * * *", async () => {
   try {
     const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
 
-    // نجيب كل الـ skips اللي حصلت من أكتر من 5 دقايق ومتبعتش إشعار تاني
+// يبعت له ال nothification تانى بعد 5 دقايق
     const skippedResponses = await Response.find({
       status: "skip",
       respondedAt: { $lte: fiveMinutesAgo },
-      resent: { $ne: true } // هنضيف دي علشان مايبعتش تاني
-    }).populate("Reminder").populate("Patient");
+      resent: { $ne: true }
+    }).populate("ReminderId").populate("PatientId");
 
     for (const response of skippedResponses) {
-      const reminder = response.reminder;
-      const patient = response.patient;
+      const reminder = response.reminderId;
+      const patient = response.patientId;
 
       if (patient?.deviceToken) {
         await sendNotification(
-          patient.deviceToken,
+          patient.deviceTokens,
           "Medicine Reminder (Repeated)",
           `You skipped your dose earlier: ${reminder.medicineId?.name || "your medicine"}. Please take it now if possible.`
         );
       }
 
-      // علشان مايبعتش تاني لنفس الـ skip
       response.resent = true;
       await response.save();
     }

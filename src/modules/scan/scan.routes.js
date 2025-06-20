@@ -1,16 +1,20 @@
 import { Router } from "express";
-import { allowedTo, protectedRoutes } from "../auth/auth.controller.js";
-import { addScan } from "./scan.controller.js";
-import { uploadSingleFile } from "../../fileUpload/fileUpload.js";
+import { protectedRoutes, allowedTo } from "../auth/auth.controller.js";
+import { addScan, getDecryptedScan } from "./scan.controller.js";
+import { uploadSingleFileOptional } from "../../fileUpload/fileUpload.js";
 import { analyzeScan } from "../../middleware/scanAiModel.js";
 
+const scanRouter = Router();
 
+// ✅ رفع Scan من Cloudinary أو جهاز المستخدم (يدعم الحالتين)
+scanRouter.post( "/",protectedRoutes, 
+    allowedTo("Radiologist"),uploadSingleFileOptional("scan"), 
+    addScan,analyzeScan
+);
 
-const scanRouter = Router()
+scanRouter.post("/view",protectedRoutes,
+    allowedTo("doctor"),
+    getDecryptedScan
+);
 
-scanRouter.post('/', protectedRoutes, allowedTo('Radiologist'),
-    uploadSingleFile("scan"), addScan, analyzeScan)
-    
-
-
-export default scanRouter
+export default scanRouter;

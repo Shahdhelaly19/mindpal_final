@@ -11,24 +11,39 @@ if (!admin.apps.length) {
   });
 }
 
-export const sendNotification = async (token, title, body) => {
+// ✅ version for one token only
+export const sendNotification = async (token, title, body, data = {}) => {
   if (!token) {
-    console.log("No FCM token provided, skipping notification.");
+    console.log("❌ No FCM token provided, skipping notification.");
     return;
   }
 
   const message = {
-    notification: {
+    token,
+    data: {
       title,
       body,
+      ...data,
     },
-    token,
+    android: {
+      priority: "high",
+    },
+    apns: {
+      headers: {
+        "apns-priority": "10",
+      },
+      payload: {
+        aps: {
+          contentAvailable: true,
+        },
+      },
+    },
   };
 
   try {
     const response = await admin.messaging().send(message);
-    console.log("Notification sent successfully:", response);
+    console.log("✅ Notification sent as DATA message:", response);
   } catch (error) {
-    console.error("Error sending notification:", error);
+    console.error("🔥 Error sending notification:", error);
   }
 };

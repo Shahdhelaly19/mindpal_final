@@ -7,5 +7,6 @@ import { protectedRoutes, allowedTo } from "../auth/auth.controller.js";
 const router = Router();
 
 router.post("/", protectedRoutes, allowedTo("admin"), addReminder);
+// router.post("/", addReminder);
 
 export default router;

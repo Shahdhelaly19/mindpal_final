@@ -4,6 +4,8 @@ import { Patient } from "../../../databases/models/patient.model.js";
 import { Scan } from "../../../databases/models/scan.model.js";
 import { catchError } from "../../middleware/catchError.js";
 import { AppError } from "../../utils/appError.js";
+import { sendNotification } from "../../utils/sendNotification.js";
+
 
 
 
@@ -54,23 +56,29 @@ export const addPatient = catchError(async (req, res, next) => {
     let doctor = await Doctor.findOne({ code: req.body.code , role:"doctor" })
     if (!doctor)
          return next(new AppError("code not found", 409))
-            
 
- 
-    const {name,password,age } = req.body;
-    
-     const newPatient = new Patient({
+    const {name, password, age} = req.body;
+
+    const newPatient = new Patient({
         name,
         password,
         age,
-        doctorId:doctor._id
+        doctorId: doctor._id
     });
- 
-     await newPatient.save();
+
+    await newPatient.save();
+
+    // ✅ Send notification to the doctor
+    if (doctor.deviceToken) {
+      await sendNotification(
+        doctor.deviceToken,
+        "🧠 New Patient Assigned",
+        `A new patient (${newPatient.name}) has been added under your care. Please follow up.`
+      );
+    }
 
     res.status(201).json({ message: "Patient created successfully", patient: newPatient });
-})
- 
+});
 
 
 

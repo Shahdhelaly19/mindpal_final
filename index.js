@@ -10,16 +10,14 @@ import { bootstrap } from './src/modules/bootstrab.js'
 import { AppError } from './src/utils/appError.js'
 import { globalError } from './src/middleware/globalError.js'
 import connectDB from "./databases/dbConnection.js";
-import "./src/cron/reminderScheduler.js";
 import { scheduleReminders } from "./src/cron/reminderScheduler.js";
-import "./src/cron/skipReminderRescheduler.js";
 
 
 
 
 
 import cors from "cors"
-// import 'dotenv/config'
+dotenv.config();
 
 const app = express()
 const port = process.env.PORT || 3000
@@ -39,6 +37,7 @@ app.use('*', (req, res, next) => {
 
 app.use(globalError)
 
+console.log("Secret Key is:", process.env.JWT_KEY);
 
 
 
