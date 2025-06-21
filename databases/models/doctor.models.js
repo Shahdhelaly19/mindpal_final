@@ -10,15 +10,15 @@ const schema = new Schema({
         type: String, required: true, unique:true , trim: true,
             minLength: [3, 'Name must be at least 3 characters']
     },
-
-   code: {
-      type: String,
-      default: () => uuidv4().slice(0, 5), // أول 5 حروف فقط
-      unique: true
+    deviceTokens: {
+        type: String,
+            default: null,
+},code: {
+        type: String,
+            default: () => uuidv4().slice(0, 5), // أول 5 حروف فقط
+                unique: true
     },
-  
     password: { type: String, required: true, trim: true }, 
-   
     role: {
         type: String,
         default:"doctor",

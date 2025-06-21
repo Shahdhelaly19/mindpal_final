@@ -52,33 +52,51 @@ export const getMyPatients = catchError(async (req, res, next) => {
 
 
 export const addPatient = catchError(async (req, res, next) => {
+  console.log("🚀 Entered addPatient API"); // ✅ هنا أول سطر نتأكد إن الدالة اشتغلت
 
-    let doctor = await Doctor.findOne({ code: req.body.code , role:"doctor" })
-    if (!doctor)
-         return next(new AppError("code not found", 409))
+  const doctor = await Doctor.findOne({ code: req.body.code, role: "doctor" });
 
-    const {name, password, age} = req.body;
+  if (!doctor) {
+    return next(new AppError("Doctor code not found", 409));
+  }
 
-    const newPatient = new Patient({
-        name,
-        password,
-        age,
-        doctorId: doctor._id
-    });
+  console.log("🟢 Step 2: Doctor deviceToken is:", doctor.deviceTokens); // ✅ نتأكد الدكتور عنده توكن ولا لأ
 
-    await newPatient.save();
+  const { name, password, age, deviceTokens  } = req.body;
 
-    // ✅ Send notification to the doctor
-    if (doctor.deviceToken) {
-      await sendNotification(
-        doctor.deviceToken,
-        "🧠 New Patient Assigned",
-        `A new patient (${newPatient.name}) has been added under your care. Please follow up.`
-      );
-    }
+  const newPatient = new Patient({
+    name,
+    password,
+    age,
+    doctorId: doctor._id,
+    deviceTokens
+  });
 
-    res.status(201).json({ message: "Patient created successfully", patient: newPatient });
+  await newPatient.save();
+
+  if (doctor.deviceTokens) {
+    console.log("📬 Sending notification to doctor:", doctor.name);
+
+    await sendNotification(
+      doctor.deviceTokens,
+      "👨‍⚕️ Doctor Alert",
+      `New patient (${newPatient.name}) added under your care. Please follow up.`,
+      {
+        type: "doctor_alert",
+        patientId: newPatient._id.toString(),
+      },
+      "doctor"
+    );
+  }
+
+  res.status(201).json({
+    message: "Patient created successfully",
+    patient: newPatient,
+  });
 });
+
+
+
 
 
 

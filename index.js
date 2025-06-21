@@ -11,6 +11,8 @@ import { AppError } from './src/utils/appError.js'
 import { globalError } from './src/middleware/globalError.js'
 import connectDB from "./databases/dbConnection.js";
 import { scheduleReminders } from "./src/cron/reminderScheduler.js";
+import "./src/cron/skipReminderRescheduler.js";
+
 
 
 

@@ -21,8 +21,8 @@ export const signin = catchError(async (req, res, next) => {
 
     if (user && bcrypt.compareSync(req.body.password, user.password)) {
               
-        if (req.body.deviceToken) {
-            user.deviceTokens = req.body.deviceToken;
+        if (req.body.deviceTokens) {
+            user.deviceTokens = req.body.deviceTokens;
             await user.save();
         }
 

@@ -11,38 +11,47 @@ if (!admin.apps.length) {
   });
 }
 
-// ✅ version for one token only
-export const sendNotification = async (token, title, body, data = {}) => {
+// ✅ Send notification for both doctor/patient
+export const sendNotification = async (token, title, body, data = {}, mode = "patient") => {
   if (!token) {
     console.log("❌ No FCM token provided, skipping notification.");
     return;
   }
 
-  const message = {
-    token,
-    data: {
-      title,
-      body,
-      ...data,
-    },
-    android: {
-      priority: "high",
-    },
-    apns: {
-      headers: {
-        "apns-priority": "10",
+  let message;
+
+  if (mode === "patient") {
+    message = {
+      token,
+      notification: { title, body },
+      data: { ...data },
+      android: { priority: "high" },
+      apns: {
+        headers: { "apns-priority": "10" },
+        payload: { aps: { contentAvailable: true } },
       },
-      payload: {
-        aps: {
-          contentAvailable: true,
+    };
+  } else if (mode === "doctor") {
+    message = {
+      token,
+      notification: { title, body },
+      data: { ...data },
+      android: { priority: "high" },
+      apns: {
+        headers: { "apns-priority": "10" },
+        payload: {
+          aps: {
+            alert: { title, body },
+            sound: "default"
+          }
         },
       },
-    },
-  };
+    };
+  }
 
   try {
     const response = await admin.messaging().send(message);
-    console.log("✅ Notification sent as DATA message:", response);
+    console.log(`✅ Notification (${mode}) sent:`, response);
   } catch (error) {
     console.error("🔥 Error sending notification:", error);
   }

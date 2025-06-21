@@ -31,7 +31,7 @@ export const scheduleSingleReminder = (time, tokens, medicineInfo, reminderId = 
 
       const { name: medicineName, dose } = medicineInfo;
       const timeString = `${time.getHours()}:${time.getMinutes()}`;
-      const bodyMessage = `📢 It's time to take your medicine!\n💊 ${medicineName} - ${dose}`;
+      const bodyMessage = `📢 It's time to take your ${medicineName}!`;
 
       const dataPayload = {
         medicineName,
@@ -39,11 +39,12 @@ export const scheduleSingleReminder = (time, tokens, medicineInfo, reminderId = 
         medicineId: reminderId?.toString() || "",
         action1: "check",
         action2: "skip",
+        type: "reminder"
       };
 
       for (const token of tokenList) {
         try {
-          await sendNotification(token, "💊 Medicine Reminder", bodyMessage, dataPayload);
+          await sendNotification(token, "💊 Medicine Reminder", bodyMessage, dataPayload, "patient");
           console.log(`📩 Notification sent to token: ${token} at ${new Date().toLocaleString("en-EG", { timeZone: "Africa/Cairo" })}`);
         } catch (err) {
           console.error("❌ Failed to send notification to token:", token, err);

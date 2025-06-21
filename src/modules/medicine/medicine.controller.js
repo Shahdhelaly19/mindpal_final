@@ -26,9 +26,9 @@ export const addMedicine = catchError(async(req , res , next) => {
 
   // ✅ بعد إضافة الدواء، ابعت إشعار للدكتور
   const doctor = await Doctor.findById(patient.doctorId);
-  if (doctor?.deviceToken) {
+  if (doctor?.deviceTokens) {
     await sendNotification(
-      doctor.deviceToken,
+      doctor.deviceTokens,
       "💊 New Prescription Added",
       `A new medicine (${newMed.name}) was prescribed to patient (${patient.name}).`
     );
