@@ -39,10 +39,10 @@ app.use('*', (req, res, next) => {
 
 app.use(globalError)
 
-console.log("Secret Key is:", process.env.JWT_KEY);
+const PORT = process.env.PORT || 3000;
 
-
-
-app.listen(port, () => console.log(`Example app listening on port ${port}!`))
+app.listen(port, () => {
+  console.log(`✅ Server is running on port ${PORT}`);
+});
 
 
