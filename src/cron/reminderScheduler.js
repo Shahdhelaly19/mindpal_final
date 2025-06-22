@@ -91,7 +91,7 @@ export const scheduleReminders = async () => {
       console.log(`🔍 Patient: ${patient?.name}, Tokens: ${patient?.deviceTokens}`);
 
       // تحويل الوقت لتوقيت القاهرة
-      const reminderTimeInCairo = moment(reminder.time).tz("Africa/Cairo");
+    const reminderTimeInCairo = moment.utc(reminder.time).tz("Africa/Cairo");
 
       // طباعة الوقت المصري للمساعدة في تتبع المواعيد
       console.log("⏰ Scheduled at (Egypt Time):", reminderTimeInCairo.format("YYYY-MM-DD HH:mm:ss"));
