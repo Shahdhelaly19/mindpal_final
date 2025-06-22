@@ -30,9 +30,10 @@ export const getPatient = catchError(async (req, res, next) => {
 export const getMyPatients = catchError(async (req, res, next) => {
     let filterObj = {};
     filterObj.role = "patient";
-    if (req.user.userId.role === "doctor") {
-        filterObj.doctorId = req.user.userId._id; // لازم يكون _id فقط
+      if (req.user.role === "doctor") {
+        filterObj.doctorId = req.user.userId;
     }
+
     
     const patients = await Patient.find(filterObj);
 
