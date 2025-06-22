@@ -11,8 +11,8 @@ export const getReminderStats = catchError(async (req, res, next) => {
 
   const totalReminders = reminders.length;
   const totalResponses = responses.length;
-  const checkedCount = responses.filter(r => r.status === "check").length;
-  const skippedCount = responses.filter(r => r.status === "skip").length;
+  const checkedCount = responses.filter(r => r.status === "taken").length;
+  const skippedCount = responses.filter(r => r.status === "skipped").length;
   const adherenceRate = totalResponses ? Math.round((checkedCount / totalResponses) * 100) : 0;
 
   res.status(200).json({
