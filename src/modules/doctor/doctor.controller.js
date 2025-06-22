@@ -11,7 +11,8 @@ export const addDoctor = catchError(async(req, res, next) => {
     const { name, password} = req.body;
     let doctor = new Doctor({
         name,
-        password
+        password,
+        role: "doctor"
     })
     await doctor.save()
     res.status(201).json({ message: "doctor created successfully", doctor});
