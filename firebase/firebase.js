@@ -15,14 +15,15 @@
 // export default admin;
 import admin from 'firebase-admin';
 
-// Initializing Firebase Admin with ENV variables
+import admin from "firebase-admin";
+
 if (!admin.apps.length) {
+  const serviceAccount = JSON.parse(
+    Buffer.from(process.env.FIREBASE_KEY_BASE64, "base64").toString("utf8")
+  );
+
   admin.initializeApp({
-    credential: admin.credential.cert({
-      projectId: process.env.FIREBASE_PROJECT_ID,
-      privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
-      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-    }),
+    credential: admin.credential.cert(serviceAccount),
   });
 }
 
