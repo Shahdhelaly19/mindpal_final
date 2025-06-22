@@ -1,6 +1,7 @@
 import { Medicine } from "../../../databases/models/medicine.model.js";
 import { Patient } from "../../../databases/models/patient.model.js";
 import { Doctor } from "../../../databases/models/doctor.models.js";
+import { Reminder } from "../../../databases/models/reminder.model.js";
 import { catchError } from "../../middleware/catchError.js";
 import { AppError } from "../../utils/appError.js";
 import { sendNotification } from "../../utils/sendNotification.js";
@@ -109,5 +110,18 @@ export const getMedicinesByPatient = catchError(async (req, res, next) => {
   res.status(200).json({
     message: "✅ Medicines for patient retrieved successfully",
     medicines,
+  });
+});
+
+
+export const getMedicineWithReminders = catchError(async (req, res, next) => {
+  const medicine = await Medicine.findById(req.params.id)
+    .populate("reminders"); // 👈 دي مهمة جدًا
+
+  if (!medicine) return next(new AppError("Medicine not found", 404));
+
+  res.status(200).json({
+    message: "✅ Medicine with reminders retrieved successfully",
+    medicine
   });
 });

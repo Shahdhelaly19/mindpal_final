@@ -12,7 +12,7 @@ import { getReminderStats } from "./patient.stats.controller.js";
 const patientRouter = Router()
 
 patientRouter.get('/:id'
-    ,protectedRoutes, allowedTo('doctor','admin')
+    ,protectedRoutes, allowedTo('doctor','admin','patient')
     ,canAccessPatientData, getPatient)
 
 patientRouter.get('/',protectedRoutes,

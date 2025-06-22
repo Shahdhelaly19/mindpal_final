@@ -1,67 +1,66 @@
 import { model, Schema, Types } from "mongoose";
 
-const schema = new Schema({
+const medicineSchema = new Schema({
   name: {
     type: String,
-    required: true
+    required: true,
   },
-
   dosage: {
-    type: String, // الكمية في كل جرعة (مثلاً 80)
-    required: true
+    type: String,
+    required: true,
   },
-
-  pillsPerDay: {
-    type: Number, // عدد المرات في اليوم (مثلاً 2)
-    required: true
-  },
-
-  timeToTake: {
-    type: String, // أول ميعاد بياخد فيه الجرعة بصيغة "HH:mm"
-    required: true
-  },
-
   schedule: {
-    type: String, // زي "مرتين يوميًا" أو "تلات مرات"
-    required: false
+    type: String,
+    required: false,
   },
-
   type: {
-    type: String, // شكل الدوا زي "tablet", "capsule"
-    required: false
+    type: String,
+    required: true,
   },
-
-  numPottle: {
-    type: String, // عدد العلب أو العبوات
-    required: false
-  },
-
   startDate: {
     type: Date,
-    required: true
+    required: true,
   },
-
   endDate: {
     type: Date,
-    required: true
+    required: true,
   },
-
-  prescribedTo: {
-    type: Types.ObjectId,
-    ref: 'Patient',
-    required: true
+  timeToTake: {
+    type: String,
+    required: true,
   },
-
+  pillsPerDay: {
+    type: Number,
+    required: true,
+  },
+  intervalDays: {
+    type: Number,
+    default: 1,
+  },
+  numPottle: {
+    type: String,
+  },
   confirm: {
     type: Boolean,
-    default: false
+    default: false,
   },
+  prescribedTo: {
+    type: Types.ObjectId,
+    ref: "Patient",
+    required: true,
+  },
+}, {
+  timestamps: true,
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true }
+});
 
-  // ✅ المضافة حديثًا:
-  intervalDays: {
-    type: Number, // كل كام يوم بياخده (1 = يوميًا، 2 = يوم بعد يوم...)
-    default: 1
-  }
-}, { timestamps: true });
 
-export const Medicine = model("Medicine", schema);
+// ✅ Virtual field to populate reminders
+medicineSchema.virtual("reminders", {
+  ref: "Reminder", // اسم الموديل
+  foreignField: "medicineId", // في reminder
+  localField: "_id", // في medicine
+});
+
+export const Medicine = model("Medicine", medicineSchema);

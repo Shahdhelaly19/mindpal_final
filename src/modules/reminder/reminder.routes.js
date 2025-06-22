@@ -8,7 +8,7 @@ const router = Router();
 
 router.post("/", protectedRoutes, allowedTo("admin"), addReminder);
 
-router.get('/medicine/:medicineId',protectedRoutes,allowedTo('admin', 'doctor'),
+router.get('/medicine/:medicineId',protectedRoutes,allowedTo('admin', 'doctor' ,'patient'),
   getRemindersByMedicine
 );
 

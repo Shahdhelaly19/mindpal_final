@@ -18,6 +18,11 @@ const reminderSchema = new mongoose.Schema({
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Admin"
+  },  
+status: {
+    type: String,
+    enum: ["pending", "taken", "skipped"],
+    default: "pending"
   }
 }, { timestamps: true });
 

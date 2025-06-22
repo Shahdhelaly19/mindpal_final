@@ -11,11 +11,11 @@ const responseSchema = new mongoose.Schema({
     ref: "Patient",
     required: true
   },
-  status: {
-    type: String,
-    enum: ["check", "skip"],
-    required: true
-  },
+ status: {
+  type: String,
+  enum: ["pending", "taken", "skipped"], // ✅ ضيف "taken" و "skipped" هنا
+  default: "pending"
+},
     resent: {
     type: Boolean,
     default: false
