@@ -30,8 +30,7 @@ const medicineSchema = new Schema({
     required: true,
   },
   pillsPerDay: {
-    type: Number,
-    required: true,
+    type: Number
   },
   intervalDays: {
     type: Number,
