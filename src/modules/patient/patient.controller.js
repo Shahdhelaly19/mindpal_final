@@ -26,28 +26,64 @@ export const getPatient = catchError(async (req, res, next) => {
 })
 
 
-export const getMyPatients = catchError(async (req, res, next) => {
+// export const getMyPatients = catchError(async (req, res, next) => {
 
-    let filterObj = {};
-    filterObj.role = "patient" 
-    if (req.user.userId.role == "doctor")
-           filterObj.doctorId = req.user.userId
+//     let filterObj = {};
+//     filterObj.role = "patient" 
+//     if (req.user.userId.role == "doctor")
+//            filterObj.doctorId = req.user.userId
     
-    const patients = await Patient.find(filterObj)
+//     const patients = await Patient.find(filterObj)
 
-    const patientsWithRadiology = await Promise.all(
+//     const patientsWithRadiology = await Promise.all(
+//         patients.map(async (patient) => {
+//             const scan = await Scan.find({ uploadedTo: patient._id });
+//             const medicines = await Medicine.find({ prescribedTo: patient._id  });
+//             return {
+//                  ...patient.toObject(),
+//                  scan: scan || [],
+//                  medicines: medicines || [],
+//             };
+//         })
+//     );
+
+//     res.status(200).json({ message: "success", patients: patientsWithRadiology });
+// });
+export const getMyPatients = catchError(async (req, res, next) => {
+    let filterObj = {};
+    filterObj.role = "patient";
+    if (req.user.userId.role === "doctor") {
+        filterObj.doctorId = req.user.userId._id; // لازم يكون _id فقط
+    }
+    
+    const patients = await Patient.find(filterObj);
+
+    const patientsWithData = await Promise.all(
         patients.map(async (patient) => {
-            const scan = await Scan.find({ uploadedTo: patient._id });
-            const medicines = await Medicine.find({ prescribedTo: patient._id  });
+            const scans = await Scan.find({ uploadedTo: patient._id });
+
+            const medicines = await Medicine.find({ prescribedTo: patient._id });
+
+            // لكل دواء، جبلي reminders الخاصة به
+            const medicinesWithReminders = await Promise.all(
+                medicines.map(async (medicine) => {
+                    const reminders = await Reminder.find({ medicineId: medicine._id });
+                    return {
+                        ...medicine.toObject(),
+                        reminders: reminders || [],
+                    };
+                })
+            );
+
             return {
-                 ...patient.toObject(),
-                 scan: scan || [],
-                 medicines: medicines || [],
+                ...patient.toObject(),
+                scan: scans || [],
+                medicines: medicinesWithReminders,
             };
         })
     );
 
-    res.status(200).json({ message: "success", patients: patientsWithRadiology });
+    res.status(200).json({ message: "success", patients: patientsWithData });
 });
 
 
