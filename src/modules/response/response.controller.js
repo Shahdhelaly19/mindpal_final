@@ -11,11 +11,13 @@ export const giveResponse = catchError(async (req, res, next) => {
   const reminder = await Reminder.findById(reminderId);
   if (!reminder) return next(new AppError("Reminder not found", 404));
 
-  const newResponse = await Response.create({
-    reminderId,
-    patientId: req.user.userId,
-    status
-  });
+const newResponse = await Response.create({
+  reminderId,
+  patientId: req.user.userId,
+  status,
+  respondedAt: new Date() // ✅ أهو دا المهم
+});
+
 
   res.status(201).json({ message: "Response saved", response: newResponse });
 });

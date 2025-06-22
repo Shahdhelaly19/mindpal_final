@@ -41,3 +41,15 @@ export const addReminder = catchError(async (req, res, next) => {
 
   res.status(201).json({ message: "Reminder created", reminder: newReminder });
 });
+
+
+export const getRemindersByMedicine = catchError(async (req, res, next) => {
+  const { medicineId } = req.params;
+
+  const reminders = await Reminder.find({ medicineId });
+
+  res.status(200).json({
+    message: "✅ Reminders for medicine retrieved successfully",
+    reminders,
+  });
+});

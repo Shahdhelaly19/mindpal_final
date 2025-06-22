@@ -1,12 +1,16 @@
 // src/modules/reminder/reminder.routes.js
 
 import { Router } from "express";
-import { addReminder } from "./reminder.controller.js";
+import { addReminder,getRemindersByMedicine } from "./reminder.controller.js";
 import { protectedRoutes, allowedTo } from "../auth/auth.controller.js";
 
 const router = Router();
 
 router.post("/", protectedRoutes, allowedTo("admin"), addReminder);
-// router.post("/", addReminder);
+
+router.get('/medicine/:medicineId',protectedRoutes,allowedTo('admin', 'doctor'),
+  getRemindersByMedicine
+);
+
 
 export default router;
