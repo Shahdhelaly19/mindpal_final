@@ -1,6 +1,7 @@
 import { Doctor } from "../../../databases/models/doctor.models.js";
 import { Medicine } from "../../../databases/models/medicine.model.js";
 import { Patient } from "../../../databases/models/patient.model.js";
+import { Reminder } from "../../../databases/models/reminder.model.js";
 import { Scan } from "../../../databases/models/scan.model.js";
 import { catchError } from "../../middleware/catchError.js";
 import { AppError } from "../../utils/appError.js";
