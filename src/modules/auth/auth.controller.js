@@ -13,32 +13,32 @@ export const addAdmin = catchError(async(req, res, next) => {
     await admin.save()
     res.json({message:"succes"})
 });
-// export const signin = catchError(async (req, res, next) => {
-//     const model = req.info;
+export const signin = catchError(async (req, res, next) => {
+    const model = req.info;
 
-//     let user = await model.findOne({ name: req.body.name })
+    let user = await model.findOne({ name: req.body.name })
           
 
-//     if (user && bcrypt.compareSync(req.body.password, user.password)) {
+    if (user && bcrypt.compareSync(req.body.password, user.password)) {
               
-//         if (req.body.deviceTokens) {
-//             user.deviceTokens = req.body.deviceTokens;
-//             await user.save();
-//         }
+        if (req.body.deviceTokens) {
+            user.deviceTokens = req.body.deviceTokens;
+            await user.save();
+        }
  
-//           if ((user.role=="patient"||user.role=="doctor") && req.body.deviceToken) {
-//             user.deviceTokens = req.body.deviceToken;
-//             user.save()
-//         }
+          if ((user.role=="patient"||user.role=="doctor") && req.body.deviceToken) {
+            user.deviceTokens = req.body.deviceToken;
+            user.save()
+        }
         
-//         let token = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_KEY)
+        let token = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_KEY)
 
 
-//         return res.json({message:"success" , token})
-//     } 
+        return res.json({message:"success" , token})
+    } 
 
-//     next(new AppError("not founded email or password" , 401))
-// })
+    next(new AppError("not founded email or password" , 401))
+})
 // export const signin = catchError(async (req, res, next) => {
 //   const model = req.info;
 //   const { name, password, deviceToken, deviceTokens } = req.body;
@@ -118,42 +118,42 @@ export const addAdmin = catchError(async(req, res, next) => {
 //   res.json({ message: "success", token });
 // });
 
-export const signin = catchError(async (req, res, next) => {
-  const model = req.info;  // لازم يتحدد في الـ middleware حسب الـ role
+// export const signin = catchError(async (req, res, next) => {
+//   const model = req.info;  // لازم يتحدد في الـ middleware حسب الـ role
 
-  if (!model) {
-    return next(new AppError("Invalid role or missing role", 400));
-  }
+//   if (!model) {
+//     return next(new AppError("Invalid role or missing role", 400));
+//   }
 
-  const { name, password, deviceToken, deviceTokens } = req.body;
+//   const { name, password, deviceToken, deviceTokens } = req.body;
 
-  // دور على المستخدم حسب الاسم فقط
-  const user = await model.findOne({ name });
+//   // دور على المستخدم حسب الاسم فقط
+//   const user = await model.findOne({ name });
 
-  if (!user) {
-    return next(new AppError("not founded email or password", 401));
-  }
+//   if (!user) {
+//     return next(new AppError("not founded email or password", 401));
+//   }
 
-  // قارن كلمة المرور
-  const isMatch = bcrypt.compareSync(password, user.password);
-  if (!isMatch) {
-    return next(new AppError("not founded email or password", 401));
-  }
+//   // قارن كلمة المرور
+//   const isMatch = bcrypt.compareSync(password, user.password);
+//   if (!isMatch) {
+//     return next(new AppError("not founded email or password", 401));
+//   }
 
-  // حدث التوكن إذا كان موجود
-  if (deviceToken || deviceTokens) {
-    user.deviceTokens = deviceToken || deviceTokens;
-    await user.save();
-  }
+//   // حدث التوكن إذا كان موجود
+// if (deviceToken || deviceTokens) {
+//   user.deviceTokens = deviceToken || deviceTokens;
+//   await user.save();
+// }
 
-  // عمل توكن جديد
-  const token = jwt.sign(
-    { userId: user._id, role: user.role },
-    process.env.JWT_KEY
-  );
+//   // عمل توكن جديد
+//   const token = jwt.sign(
+//     { userId: user._id, role: user.role },
+//     process.env.JWT_KEY
+//   );
 
-  res.json({ message: "success", token });
-});
+//   res.json({ message: "success", token });
+// });
 
 
 export const protectedRoutes = catchError(async (req, res, next) => {
