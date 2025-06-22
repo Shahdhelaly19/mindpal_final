@@ -1,11 +1,8 @@
 
 import express from 'express'
 import dotenv from "dotenv";
-
-
-
-
 dotenv.config();
+
 import { bootstrap } from './src/modules/bootstrab.js'
 import { AppError } from './src/utils/appError.js'
 import { globalError } from './src/middleware/globalError.js'
@@ -19,7 +16,6 @@ import "./src/cron/skipReminderRescheduler.js";
 
 
 import cors from "cors"
-dotenv.config();
 
 const app = express()
 const port = process.env.PORT || 3000
