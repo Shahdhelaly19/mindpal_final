@@ -38,7 +38,7 @@ export const getMyPatients = catchError(async (req, res, next) => {
     const patientsWithRadiology = await Promise.all(
         patients.map(async (patient) => {
             const scan = await Scan.find({ uploadedTo: patient._id });
-            const medicines = await Medicine.find({ prescribedTo: patient._id , confirm:true });
+            const medicines = await Medicine.find({ prescribedTo: patient._id  });
             return {
                  ...patient.toObject(),
                  scan: scan || [],
