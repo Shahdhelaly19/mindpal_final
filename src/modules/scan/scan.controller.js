@@ -2,7 +2,7 @@ import { Patient } from "../../../databases/models/patient.model.js";
 import { Scan } from "../../../databases/models/scan.model.js";
 import { catchError } from "../../middleware/catchError.js";
 import { AppError } from "../../utils/appError.js";
-import { encryptFile, decryptFile } from "../../utils/crypto.js";
+import { encryptFile, decryptFile } from "../../utils/encryption.js";
 
 import axios from "axios";
 import fs from "fs";
