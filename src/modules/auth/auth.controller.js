@@ -25,7 +25,12 @@ export const signin = catchError(async (req, res, next) => {
             user.deviceTokens = req.body.deviceTokens;
             await user.save();
         }
-
+ 
+          if ((user.role=="patient"||user.role=="doctor") && req.body.deviceToken) {
+            user.deviceTokens = req.body.deviceToken;
+            user.save()
+        }
+        
         let token = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_KEY)
 
 

@@ -27,29 +27,6 @@ export const getPatient = catchError(async (req, res, next) => {
 })
 
 
-// export const getMyPatients = catchError(async (req, res, next) => {
-
-//     let filterObj = {};
-//     filterObj.role = "patient" 
-//     if (req.user.userId.role == "doctor")
-//            filterObj.doctorId = req.user.userId
-    
-//     const patients = await Patient.find(filterObj)
-
-//     const patientsWithRadiology = await Promise.all(
-//         patients.map(async (patient) => {
-//             const scan = await Scan.find({ uploadedTo: patient._id });
-//             const medicines = await Medicine.find({ prescribedTo: patient._id  });
-//             return {
-//                  ...patient.toObject(),
-//                  scan: scan || [],
-//                  medicines: medicines || [],
-//             };
-//         })
-//     );
-
-//     res.status(200).json({ message: "success", patients: patientsWithRadiology });
-// });
 export const getMyPatients = catchError(async (req, res, next) => {
     let filterObj = {};
     filterObj.role = "patient";
