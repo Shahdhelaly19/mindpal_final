@@ -39,33 +39,58 @@ export const addAdmin = catchError(async(req, res, next) => {
 
 //     next(new AppError("not founded email or password" , 401))
 // })
+// export const signin = catchError(async (req, res, next) => {
+//   const model = req.info;
+//   const { name, password, deviceToken, deviceTokens } = req.body;
+
+//   const user = await model.findOne({ name: });
+//   if (!user) {
+//     return next(new AppError("not founded email or password", 401));
+//   }
+
+//   const passwordMatch = bcrypt.compareSync(password, user.password);
+//   if (!passwordMatch) {
+//     return next(new AppError("not founded email or password", 401));
+//   }
+
+//   // ✅ لو فيه توكن جاى من الموبايل، نسجله
+//   if (deviceToken || deviceTokens) {
+//     user.deviceTokens = deviceToken || deviceTokens;
+//     await user.save();
+//   }
+
+//   const token = jwt.sign(
+//     { userId: user._id, role: user.role },
+//     process.env.JWT_KEY
+//   );
+
+//   return res.json({ message: "success", token });
+// });
 export const signin = catchError(async (req, res, next) => {
-  const model = req.info;
-  const { name, password, deviceToken, deviceTokens } = req.body;
+    const model = req.info;
 
-  const user = await model.findOne({ name });
-  if (!user) {
-    return next(new AppError("not founded email or password", 401));
-  }
+    
+    let user = await model.findOne({ name: req.body.name })
+      
+  console.log(bcrypt.compareSync(req.body.password, user.password));
+  
+    if (user && bcrypt.compareSync(req.body.password, user.password)) {
+        
 
-  const passwordMatch = bcrypt.compareSync(password, user.password);
-  if (!passwordMatch) {
-    return next(new AppError("not founded email or password", 401));
-  }
+              
+        if ((user.role=="patient"||user.role=="doctor") && req.body.deviceToken) {
+            user.deviceTokens = req.body.deviceToken;
+            user.save()
+        }
 
-  // ✅ لو فيه توكن جاى من الموبايل، نسجله
-  if (deviceToken || deviceTokens) {
-    user.deviceTokens = deviceToken || deviceTokens;
-    await user.save();
-  }
+        let token = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_KEY)
 
-  const token = jwt.sign(
-    { userId: user._id, role: user.role },
-    process.env.JWT_KEY
-  );
 
-  return res.json({ message: "success", token });
-});
+        return res.json({message:"success" , token})
+    } 
+
+    next(new AppError("not founded email or password" , 401))
+})
 
 
 export const protectedRoutes = catchError(async (req, res, next) => {
