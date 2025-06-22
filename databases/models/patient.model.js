@@ -39,8 +39,7 @@ const schema = new Schema({
 
     deviceTokens: {
         type: String,
-        default: null,
-        required: true
+        default: null
       }
       
 }, {
