@@ -13,32 +13,60 @@ export const addAdmin = catchError(async(req, res, next) => {
     await admin.save()
     res.json({message:"succes"})
 });
-export const signin = catchError(async (req, res, next) => {
-    const model = req.info;
+// export const signin = catchError(async (req, res, next) => {
+//     const model = req.info;
 
-    let user = await model.findOne({ name: req.body.name })
+//     let user = await model.findOne({ name: req.body.name })
           
 
-    if (user && bcrypt.compareSync(req.body.password, user.password)) {
+//     if (user && bcrypt.compareSync(req.body.password, user.password)) {
               
-        if (req.body.deviceTokens) {
-            user.deviceTokens = req.body.deviceTokens;
-            await user.save();
-        }
+//         if (req.body.deviceTokens) {
+//             user.deviceTokens = req.body.deviceTokens;
+//             await user.save();
+//         }
  
-          if ((user.role=="patient"||user.role=="doctor") && req.body.deviceToken) {
-            user.deviceTokens = req.body.deviceToken;
-            user.save()
-        }
+//           if ((user.role=="patient"||user.role=="doctor") && req.body.deviceToken) {
+//             user.deviceTokens = req.body.deviceToken;
+//             user.save()
+//         }
         
-        let token = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_KEY)
+//         let token = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_KEY)
 
 
-        return res.json({message:"success" , token})
-    } 
+//         return res.json({message:"success" , token})
+//     } 
 
-    next(new AppError("not founded email or password" , 401))
-})
+//     next(new AppError("not founded email or password" , 401))
+// })
+export const signin = catchError(async (req, res, next) => {
+  const model = req.info;
+  const { name, password, deviceToken, deviceTokens } = req.body;
+
+  const user = await model.findOne({ name });
+  if (!user) {
+    return next(new AppError("not founded email or password", 401));
+  }
+
+  const passwordMatch = bcrypt.compareSync(password, user.password);
+  if (!passwordMatch) {
+    return next(new AppError("not founded email or password", 401));
+  }
+
+  // ✅ لو فيه توكن جاى من الموبايل، نسجله
+  if (deviceToken || deviceTokens) {
+    user.deviceTokens = deviceToken || deviceTokens;
+    await user.save();
+  }
+
+  const token = jwt.sign(
+    { userId: user._id, role: user.role },
+    process.env.JWT_KEY
+  );
+
+  return res.json({ message: "success", token });
+});
+
 
 export const protectedRoutes = catchError(async (req, res, next) => {
   let token = req.headers.token;
